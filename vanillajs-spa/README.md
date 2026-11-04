@@ -26,7 +26,7 @@ description: This minimal JavaScript application demonstrates usage of the Micro
 
 ## Overview
 
-This sample demonstrates how to sign users into a sample Vanilla JavaScript single-page application (SPA) tby using Microsoft Entra ID. The sample utilizes the [Microsoft Authentication Library for JavaScript](https://github.com/AzureAD/microsoft-authentication-library-for-js) (MSAL.js) to simplify adding authentication.
+This sample demonstrates how to sign users into a sample Vanilla JavaScript single-page application (SPA) by using Microsoft Entra ID. The sample utilizes the [Microsoft Authentication Library for JavaScript](https://github.com/AzureAD/microsoft-authentication-library-for-js) (MSAL.js) to simplify adding authentication.
 
 ## Usage
 
@@ -42,7 +42,8 @@ This sample demonstrates how to sign users into a sample Vanilla JavaScript sing
 | File/folder              | Description                                                               |
 |--------------------------|---------------------------------------------------------------------------|
 | `public/authConfig.js`   | Contains configuration parameters for the sample.                         |
-| `public/auth.js`         | Used for authentication with redirect flow.                               |
+| `public/auth.js`         | Used for authentication with redirect and popup flows.                    |
+| `public/redirect.html`   | Blank page served at `/redirect` for popup authentication flows.          |
 | `public/ui.js`           | Contains UI logic.                                                        |
 | `server.js`              | Node server for `index.html`.                                             |
 
@@ -74,6 +75,9 @@ You can register an app in your tenant automatically by using Microsoft Graph Po
 When you use Microsoft Graph PowerShell, you automatically register the applications and related objects app secrets, then modify your project config files, so you can run the app without any further action:
 
 * To register your app in the Microsoft Entra admin center use the steps in [Register the web app](https://learn.microsoft.com/entra/external-id/customers/sample-web-app-node-sign-in#register-the-web-app).
+    * Under **Authentication** > **Single-page application** Redirect URIs, register **both** of the following URIs:
+        * `http://localhost:3000/` — used for **Sign in using Redirect** (`loginRedirect`), matching `msalConfig.auth.redirectUri` in `App/public/authConfig.js`.
+        * `http://localhost:3000/redirect` — used for **Sign in using Popup** (`loginPopup`). In `App/public/auth.js`, `loginPopup` overrides `redirectUri` to `"/redirect"`, which `App/server.js` serves as the blank page `App/public/redirect.html` (you do **not** need to register `http://localhost:3000/redirect.html`).
 
 * To register and configure your app automatically,
 
@@ -104,7 +108,7 @@ When you use Microsoft Graph PowerShell, you automatically register the applicat
 
     * `clientId` - The identifier of the application, also referred to as the client. Replace the text in quotes with the **Application (client) ID** value that was recorded earlier.
     * `authority` - The authority is a URL that indicates a directory that MSAL can request tokens from. Replace *Enter_the_Tenant_Info_Here* with the **Directory (tenant) ID** value that was recorded earlier.
-    * `redirectUri` - The **Redirect URI** of the application. If necessary, replace the text in quotes with the redirect URI that was recorded earlier.
+    * `redirectUri` - The **Redirect URI** of the application (for example, `http://localhost:3000/`). If necessary, replace the text in quotes with the redirect URI that was recorded earlier. Note that `App/public/auth.js` also uses `/redirect` (`http://localhost:3000/redirect`) for popup sign-in, so ensure both URIs are registered on your application in the Microsoft Entra admin center.
 
 ## Run the application and sign in
 
@@ -147,14 +151,17 @@ Make sure that your questions or comments are tagged with [`azure-active-directo
 MSAL.js provides 3 login APIs: `loginPopup()`, `loginRedirect()` and `ssoSilent()`:
 
 ```javascript
-    myMSALObj.loginPopup(loginRequest)
-        .then((response) => {
-            // your logic
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    myMSALObj.loginPopup({
+        ...loginRequest,
+        redirectUri: "/redirect"
+    }).then((response) => {
+        // your logic
+    }).catch(error => {
+        console.error(error);
+    });
 ```
+
+> :information_source: When using `loginPopup()`, this sample sets `redirectUri: "/redirect"` (which resolves to `http://localhost:3000/redirect` and serves the blank `public/redirect.html` page so the main application does not reload inside the popup window). Make sure `http://localhost:3000/redirect` is registered as a Single-page application Redirect URI in your Microsoft Entra App Registration alongside `http://localhost:3000/`.
 
 To use the redirect flow, you must register a handler for redirect promise. **MSAL.js** provides`handleRedirectPromise()` API:
 
