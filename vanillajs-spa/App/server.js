@@ -11,7 +11,7 @@ const app = express();
 app.use(morgan('dev'));
 
 // serve public assets.
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // serve msal-browser module
 app.use(express.static(path.join(__dirname, "node_modules/@azure/msal-browser/lib")));
@@ -28,11 +28,13 @@ app.get('/redirect', (req, res) => {
 
 // set up a route for index.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '/index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(DEFAULT_PORT, () => {
-    console.log(`Sample app listening on port ${DEFAULT_PORT}!`);
-});
+if (require.main === module) {
+    app.listen(DEFAULT_PORT, () => {
+        console.log(`Sample app listening on port ${DEFAULT_PORT}!`);
+    });
+}
 
 module.exports = app;

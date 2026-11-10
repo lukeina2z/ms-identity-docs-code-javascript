@@ -2,6 +2,10 @@
  * @jest-environment jsdom
  */
 
+const { TextEncoder, TextDecoder } = require('util');
+
+Object.assign(global, { TextEncoder, TextDecoder });
+
 const request = require('supertest');
 const path = require('path');
 const fs = require('fs');
@@ -10,21 +14,22 @@ const app = require('./server.js');
 
 jest.dontMock('fs');
 
-const html = fs.readFileSync(path.resolve(__dirname, './App/index.html'), 'utf8');
+const publicDir = path.join(__dirname, 'public');
+const html = fs.readFileSync(path.join(publicDir, 'index.html'), 'utf8');
 
 describe('Sanitize index page', () => {
     beforeAll(async() => {
         global.document.documentElement.innerHTML = html.toString();
     });
 
-    it('should have valid cdn link', () => {
-        expect(document.getElementById("load-msal").getAttribute("src")).toContain("https://alcdn.msauth.net/browser");
+    it('should load the locally served MSAL browser script', () => {
+        expect(document.querySelector('script[src="/msal-browser.min.js"]')).not.toBeNull();
     });
 });
 
 describe('Sanitize configuration object', () => {
     beforeAll(() => {
-        global.msalConfig = require('./App/authConfig.js').msalConfig;
+        global.msalConfig = require('./public/authConfig.js').msalConfig;
     });
 
     it('should define the config object', () => {
@@ -32,8 +37,8 @@ describe('Sanitize configuration object', () => {
     });
 
     it('should not contain credentials', () => {
-        const regexGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        expect(regexGuid.test(msalConfig.auth.clientId)).toBe(false);
+        expect(msalConfig.auth.clientSecret).toBeUndefined();
+        expect(msalConfig.auth.clientAssertion).toBeUndefined();
     });
 
     it('should contain authority URI', () => {
@@ -44,15 +49,11 @@ describe('Sanitize configuration object', () => {
 
 describe('Ensure pages served', () => {
 
-    beforeAll(() => {
-        process.env.NODE_ENV = 'test';
-    });
-
     it('should get index page', async () => {
         const res = await request(app)
             .get('/');
 
-        const data = await fs.promises.readFile(path.join(__dirname, './App/index.html'), 'utf8');
+        const data = await fs.promises.readFile(path.join(publicDir, 'index.html'), 'utf8');
         expect(res.statusCode).toEqual(200);
         expect(res.text).toEqual(data);
     });
@@ -61,7 +62,25 @@ describe('Ensure pages served', () => {
         const res = await request(app)
             .get('/signout');
 
-        const data = await fs.promises.readFile(path.join(__dirname, './App/signout.html'), 'utf8');
+        const data = await fs.promises.readFile(path.join(publicDir, 'signout.html'), 'utf8');
+        expect(res.statusCode).toEqual(200);
+        expect(res.text).toEqual(data);
+    });
+
+    it('should get redirect page', async () => {
+        const res = await request(app)
+            .get('/redirect');
+
+        const data = await fs.promises.readFile(path.join(publicDir, 'redirect.html'), 'utf8');
+        expect(res.statusCode).toEqual(200);
+        expect(res.text).toEqual(data);
+    });
+
+    it('should get the MSAL browser script', async () => {
+        const res = await request(app)
+            .get('/msal-browser.min.js');
+
+        const data = await fs.promises.readFile(path.join(__dirname, 'node_modules', '@azure', 'msal-browser', 'lib', 'msal-browser.min.js'), 'utf8');
         expect(res.statusCode).toEqual(200);
         expect(res.text).toEqual(data);
     });

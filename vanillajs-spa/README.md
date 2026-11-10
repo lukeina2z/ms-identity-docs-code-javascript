@@ -129,7 +129,7 @@ Run the project with a web server by using Node.js:
 
 The app requests the delegated Microsoft Graph `User.Read` permission. Ensure this permission is configured on the app registration and consent when prompted. MSAL acquires an access token silently for the selected account, falling back to an interactive redirect when consent or sign-in is required. The ID token is used only for the claims table, not to call Graph. Profile-loading errors appear above the claims table without hiding the claims.
 
-To run the Graph profile regression tests from `App`, use `npm test -- --runInBand graph.test.js`.
+To run all tests from `App`, use `npm run test`. The tests cover the served pages, MSAL configuration, and Graph profile behavior without requiring sign-in or live Microsoft Graph requests. To run only the Graph profile regression tests, use `npm test -- --runInBand graph.test.js`.
 
 ![Screenshot](./ReadmeFiles/js-spa-sign-in.png)
 
