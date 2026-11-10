@@ -75,6 +75,15 @@
       <br />
       <h5 id="welcome-div" class="card-header text-center d-none"></h5>
 
+      <section id="profile-div" class="card my-3 d-none" aria-labelledby="profile-title">
+        <div class="card-body">
+          <h5 id="profile-title" class="card-title">Microsoft Graph user profile</h5>
+          <p>Response from <code>GET https://graph.microsoft.com/v1.0/me</code></p>
+          <p id="profile-status" role="status" aria-live="polite"></p>
+          <pre id="profile-result" class="mb-0 d-none"></pre>
+        </div>
+      </section>
+
       <table class="table table-striped table-bordered d-none" id="table-div">
         <thead>
           <tr>

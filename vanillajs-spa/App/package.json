@@ -33,9 +33,11 @@
   },
   "devDependencies": {
     "@azure/msal-browser": "^4.0.0",
-    "@types/jest": "^29.5.0",
     "@types/express": "^4.17.3",
+    "@types/jest": "^29.5.0",
     "@types/morgan": "^1.9.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "nodemon": "^2.0.20",
     "supertest": "^6.1.4"
   },

@@ -16,11 +16,10 @@ let accountId = "";
 const myMSALObj = new msal.PublicClientApplication(msalConfig);
 
 myMSALObj.initialize().then(() => {
-    // Redirect: once login is successful and redirects with tokens, call Graph API
-    myMSALObj.handleRedirectPromise().then(handleResponse).catch(err => {
-        console.error(err);
-    });
-})
+    return myMSALObj.handleRedirectPromise();
+}).then(handleResponse).catch(err => {
+    console.error(err);
+});
 
 function selectAccount() {
 
@@ -29,29 +28,61 @@ function selectAccount() {
      * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
      */
 
+    const activeAccount = myMSALObj.getActiveAccount();
+    if (activeAccount) {
+        return activeAccount;
+    }
+
     const currentAccounts = myMSALObj.getAllAccounts();
 
-    if (!currentAccounts) {
-        return;
-    } else if (currentAccounts.length > 1) {
+    if (currentAccounts.length > 1) {
         // Add your account choosing logic here
         console.warn("Multiple accounts detected.");
     } else if (currentAccounts.length === 1) {
-        username = currentAccounts[0].username
-        showWelcomeMessage(currentAccounts[0].username);
-        updateTable(currentAccounts[0]);
+        return currentAccounts[0];
     }
 }
 
-function handleResponse(resp) {
-    if (resp !== null) {
-        accountId = resp.account.homeAccountId;
-        myMSALObj.setActiveAccount(resp.account);
-        showWelcomeMessage(resp.account);
-    } else {
-            selectAccount();
-        } 
+async function handleResponse(resp) {
+    const account = resp ? resp.account : selectAccount();
+    if (!account) {
+        return;
     }
+
+    accountId = account.homeAccountId;
+    myMSALObj.setActiveAccount(account);
+    showWelcomeMessage(account);
+    await loadUserProfile(account);
+}
+
+async function loadUserProfile(account) {
+    showProfileLoading();
+
+    try {
+        const tokenResponse = await getTokenRedirect(loginRequest, account);
+        if (!tokenResponse) {
+            return; // Interactive token acquisition is navigating away.
+        }
+        if (!tokenResponse.accessToken) {
+            throw new Error("MSAL did not return a Microsoft Graph access token.");
+        }
+
+        const response = await fetch("https://graph.microsoft.com/v1.0/me", {
+            headers: {
+                Authorization: `Bearer ${tokenResponse.accessToken}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Microsoft Graph /me failed (${response.status}): ${await response.text()}`);
+        }
+
+        showUserProfile(await response.json());
+    } catch (error) {
+        console.error("Unable to load Microsoft Graph profile.", error);
+        showProfileError(error);
+    }
+}
 
 async function signIn(method) {
     signInType = isIE ? "redirect" : method;
@@ -81,16 +112,17 @@ function signOut(interactionType) {
     }
 }
 
-// This function can be removed if you do not need to support IE
 async function getTokenRedirect(request, account) {
-    return await myMSALObj.acquireTokenSilent(request).catch(async (error) => {
-        console.log("silent token acquisition fails.");
-        if (error instanceof msal.InteractionRequiredAuthError) {
-            // fallback to interaction when silent call fails
-            console.log("acquiring token using redirect");
-            myMSALObj.acquireTokenRedirect(request);
-        } else {
-            console.error(error);
+    const tokenRequest = { ...request, account };
+
+    try {
+        return await myMSALObj.acquireTokenSilent(tokenRequest);
+    } catch (error) {
+        if (!(error instanceof msal.InteractionRequiredAuthError)) {
+            throw error;
         }
-    });
+
+        await myMSALObj.acquireTokenRedirect(tokenRequest);
+        return null;
+    }
 }

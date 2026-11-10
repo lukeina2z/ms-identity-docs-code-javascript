@@ -54,7 +54,7 @@ This sample demonstrates how to sign users into a sample Vanilla JavaScript sing
 * A Microsoft Entra tenant. For more information, see: [How to get a Microsoft Entra tenant](https://learn.microsoft.com/entra/identity-platform/test-setup-environment#get-a-test-tenant)
 * If you'd like to use Azure services, such as hosting your app in Azure App Service, [VS Code Azure Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-node-azure-pack) extension is recommended for interacting with Azure through VS Code Interface.
 
->This sample will not work with a **personal Microsoft account**. If you're signed in to the [Microsoft Entra admin center](https://entra.microsoft.com/) with a personal Microsoft account and have not created a user account in your directory before, you will need to create one before proceeding.
+>The current `App/public/authConfig.js` uses the `consumers` authority for **personal Microsoft accounts (MSA)**. Your app registration must support personal Microsoft accounts. To use work or school accounts instead, configure the corresponding tenant authority and supported account types.
 
 ## Clone or download the sample application
 
@@ -125,6 +125,11 @@ Run the project with a web server by using Node.js:
 
 1. Open your browser and navigate to `http://localhost:3000`.
 1. Click the **sign-in** button on the top right corner.
+1. After sign-in, the **Microsoft Graph user profile** section displays the JSON response from `GET https://graph.microsoft.com/v1.0/me` above the ID-token claims table. The profile also loads when a signed-in session is restored after a page refresh.
+
+The app requests the delegated Microsoft Graph `User.Read` permission. Ensure this permission is configured on the app registration and consent when prompted. MSAL acquires an access token silently for the selected account, falling back to an interactive redirect when consent or sign-in is required. The ID token is used only for the claims table, not to call Graph. Profile-loading errors appear above the claims table without hiding the claims.
+
+To run the Graph profile regression tests from `App`, use `npm test -- --runInBand graph.test.js`.
 
 ![Screenshot](./ReadmeFiles/js-spa-sign-in.png)
 
