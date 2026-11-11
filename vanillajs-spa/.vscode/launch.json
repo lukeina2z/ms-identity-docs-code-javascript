@@ -9,7 +9,57 @@
             "request": "launch",
             "type": "msedge",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/App/public"
+            "webRoot": "${workspaceFolder}/App/public",
+            "pathMapping": {
+                "/": "${workspaceFolder}/App/public",
+                "/msal-browser.js": "${workspaceFolder}/App/node_modules/@azure/msal-browser/lib/msal-browser.js",
+                "/msal-browser.min.js": "${workspaceFolder}/App/node_modules/@azure/msal-browser/lib/msal-browser.min.js",
+                "/redirect-bridge": "${workspaceFolder}/App/node_modules/@azure/msal-browser/lib/redirect-bridge"
+            },
+            "outFiles": [
+                "${workspaceFolder}/App/public/**/*.js",
+                "${workspaceFolder}/App/node_modules/@azure/msal-browser/lib/**/*.js"
+            ],
+            "resolveSourceMapLocations": [
+                "**",
+                "!**/node_modules/@azure/msal-common/dist-browser/response/ResponseHandler.mjs.map",
+                "!**/node_modules/@azure/msal-common/dist-browser/protocol/Authorize.mjs.map"
+            ],
+            "sourceMapPathOverrides": {
+                "../src/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/*",
+                "../../../src/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/*",
+                "../../src/account/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/account/*",
+                "../../src/authority/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/authority/*",
+                "../../src/client/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/client/*",
+                "../../src/constants/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/constants/*",
+                "../../src/logger/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/logger/*",
+                "../../src/url/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/url/*",
+                "../../src/cache/CacheManager.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/cache/CacheManager.ts",
+                "../../src/config/ClientConfiguration.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/config/ClientConfiguration.ts",
+                "../../src/protocol/Token.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/protocol/Token.ts",
+                "../../src/network/FetchClient.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/network/FetchClient.ts",
+                "../../src/network/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/network/*",
+                "../../src/request/*RequestHelpers.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/request/*RequestHelpers.ts",
+                "../../src/request/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/request/*",
+                "../../src/crypto/BrowserCrypto.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/crypto/BrowserCrypto.ts",
+                "../../src/crypto/TokenBindingKeyManager.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/crypto/TokenBindingKeyManager.ts",
+                "../../src/crypto/CryptoOps.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/crypto/CryptoOps.ts",
+                "../../src/crypto/PkceGenerator.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/crypto/PkceGenerator.ts",
+                "../../src/crypto/SignedHttpRequest.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/crypto/SignedHttpRequest.ts",
+                "../../src/crypto/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/crypto/*",
+                "../../src/utils/Browser*.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/utils/Browser*.ts",
+                "../../src/utils/Helpers.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/utils/Helpers.ts",
+                "../../src/utils/Popup*.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/utils/Popup*.ts",
+                "../../src/utils/MsalFrameStatsUtils.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/utils/MsalFrameStatsUtils.ts",
+                "../../src/utils/IframeMonitor.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/utils/IframeMonitor.ts",
+                "../../src/utils/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/utils/*",
+                "../../src/error/Browser*.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/error/Browser*.ts",
+                "../../src/error/Native*.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/error/Native*.ts",
+                "../../src/error/NestedApp*.ts": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/error/NestedApp*.ts",
+                "../../src/error/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-common/src/error/*",
+                "../../src/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/*",
+                "../../../../src/*": "C:/gits/gh-lukeina2z/microsoft-authentication-library-for-js/lib/msal-browser/src/*"
+            }
         }
     ]
 }

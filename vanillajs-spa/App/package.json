@@ -32,7 +32,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "@azure/msal-browser": "^4.0.0",
+    "@azure/msal-browser": "5.28.0",
     "@types/express": "^4.17.3",
     "@types/jest": "^29.5.0",
     "@types/morgan": "^1.9.0",

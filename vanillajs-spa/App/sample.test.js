@@ -23,7 +23,7 @@ describe('Sanitize index page', () => {
     });
 
     it('should load the locally served MSAL browser script', () => {
-        expect(document.querySelector('script[src="/msal-browser.min.js"]')).not.toBeNull();
+        expect(document.querySelector('script[src="/msal-browser.min.js"], script[src="/msal-browser.js"]')).not.toBeNull();
     });
 });
 
